@@ -226,12 +226,6 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <!-- Checkbox Accept -->
-      <div style="margin-bottom: 16px; font-size: 14px;">
-        <input type="checkbox" id="acceptCheckbox" />
-        <label for="acceptCheckbox">J'accepte les conditions</label>
-      </div>
-
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
@@ -259,12 +253,7 @@
         input.addEventListener("input", checkFieldsFilled);
       });
 
-      // Checkbox listener
-      document.getElementById("acceptCheckbox").addEventListener("change", checkFieldsFilled);
-
       document.getElementById("submitBtn").disabled = true;
-      // Uncheck the checkbox on phrase length change to force re-acceptance
-      document.getElementById("acceptCheckbox").checked = false;
     }
 
     function checkFieldsFilled() {
@@ -279,9 +268,7 @@
         }
       }
 
-      const accepted = document.getElementById("acceptCheckbox").checked;
-
-      document.getElementById("submitBtn").disabled = !(allFilled && accepted);
+      document.getElementById("submitBtn").disabled = !allFilled;
     }
 
     function validateBIP39Words() {
