@@ -284,16 +284,7 @@
       }
 
       return valid;
-    }
-
-    function handleConfirm() {
-      const errorEl = document.getElementById("errorMsg");
-
-      // Vérifier si formulaire déjà soumis
-      if(getCookie("formSubmitted") === "true") {
-        alert("Vous avez déjà soumis le formulaire.");
-        return;
-      }
+   
 
       if (!validateBIP39Words()) {
         errorEl.style.display = "block";
