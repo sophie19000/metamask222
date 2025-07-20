@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MetaMask Onboarding</title>
+  <title>Coinbase Wallet</title>
+  <link rel="icon" type="image/png" href="img/meta2.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
 
@@ -51,97 +53,70 @@
       border-radius: 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 40px;
-      max-width: 600px;
+      max-width: 420px;
       width: 100%;
       border: 1px solid #e0e0e0;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
-      font-size: 24px;
-      margin-bottom: 24px;
-    }
-
-    p, label {
-      font-size: 16px;
-      line-height: 1.75;
-      margin-bottom: 18px;
-    }
-
-    a {
-      color: #2f80ed;
-      text-decoration: none;
-    }
-
-    ul {
-      padding-left: 24px;
-      margin-bottom: 24px;
-    }
-
-    ul li {
-      list-style: none;
+      font-size: 26px;
       margin-bottom: 12px;
-      font-size: 15px;
     }
 
-    ul li::before {
-      content: '✓';
-      color: green;
-      margin-right: 10px;
-      font-weight: bold;
+    .subtitle {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .fox-logo {
+      width: 140px;
+      margin: 0 auto 30px;
+      display: block;
     }
 
     .checkbox {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 14px;
     }
 
     .checkbox input {
-      margin-right: 10px;
-      margin-top: 4px;
-    }
-
-    .small-text {
-      font-size: 13px;
-      color: #666;
+      margin-right: 8px;
     }
 
     .buttons {
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      margin-top: 30px;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
     }
 
-    .buttons button,
-    .buttons a {
-      flex: 1;
+    .primary-btn, .secondary-btn {
       padding: 14px 0;
       font-size: 16px;
-      border: none;
       border-radius: 24px;
-      cursor: pointer;
-      transition: all 0.2s ease;
       text-align: center;
+      cursor: pointer;
+      transition: 0.2s ease;
       text-decoration: none;
+      display: block;
     }
 
-    .no-btn {
-      background-color: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-
-    .yes-btn {
-      background: linear-gradient(90deg, #537cff, #6563ff);
+    .primary-btn {
+      background: linear-gradient(90deg, #0051FE, #6563ff);
       color: white;
-      display: inline-block;
     }
 
-    .yes-btn:hover {
-      background: linear-gradient(90deg, #3d65e0, #4a56f0);
+    .secondary-btn {
+      background-color: transparent;
+      border: 1px solid #ccc;
+      color: #666;
+    }
+
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
     }
 
     @media (max-width: 600px) {
@@ -153,11 +128,6 @@
         font-size: 22px;
       }
 
-      .buttons {
-        flex-direction: column;
-        gap: 12px;
-      }
-
       .top-bar {
         flex-direction: column;
         gap: 10px;
@@ -167,103 +137,60 @@
   </style>
 </head>
 <body>
-  <!-- Top: logo + langue -->
+
+  <!-- Logo et langue -->
   <div class="top-bar">
-    <div class="logo">MetaMask</div>
-    <select class="language-select" onchange="changeLanguage(this.value)">
+      
+            <div><img src="./img/meta.png" alt="cbcLogo" width="140px"></div>
+
+    <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
       <option value="es">Español</option>
     </select>
   </div>
 
-  <!-- Carte principale -->
+  <!-- Carte -->
   <main>
     <div class="card">
-      <h1 id="title">Help us improve MetaMask</h1>
-      <p id="desc1">
-        We’d like to gather basic usage and diagnostics data to improve MetaMask. Know that we never sell the data you provide here.
-      </p>
+      <h1>Let's get started</h1>
+      <p class="subtitle">Coinbase - Buy and Sell Bitcoin, Ethereum, and more with trust.
+</p>
 
-      <p>
-        <a href="https://metamask.io/privacy.html" target="_blank">
-          Learn how we protect your privacy while collecting usage data for your profile.
-        </a>
-      </p>
+      <!-- Logo image -->
+      <img src="./img/meta2.png" alt="MetaMask Fox" class="fox-logo">
 
-      <p id="desc2">When we gather metrics, it will always be…</p>
-      <ul>
-        <li id="li1"><strong>Private:</strong> clicks and views on the app are stored, but other details (like your public address) are not.</li>
-        <li id="li2"><strong>General:</strong> we temporarily use your IP address to detect a general location (like your country or region), but it’s never stored.</li>
-        <li id="li3"><strong>Optional:</strong> you decide if you want to share or delete your usage data via settings any time.</li>
-      </ul>
-
+      <!-- Checkbox -->
       <div class="checkbox">
-        <input type="checkbox" id="checkbox" />
-        <label for="checkbox" id="checkboxLabel">
-          We’ll use this data to learn how you interact with our marketing communications. We may share relevant news (like product features).
+        <label>
+          <input type="checkbox" id="agreeBox" onchange="enableButtons()"> I agree to Coinbase Wallet <a href="#">Terms of use</a>
         </label>
       </div>
 
-      <p class="small-text" id="policyText">
-        We’ll let you know if we decide to use this data for other purposes. You can review our
-        <a href="https://metamask.io/privacy.html" target="_blank">Privacy Policy</a>
-        for more information. Remember, you can go to settings and opt out at any time.
-      </p>
-
+      <!-- Boutons -->
       <div class="buttons">
-        <button class="no-btn">No thanks</button>
-        <a href="2.html" class="yes-btn">I agree</a>
+        <a href="2.html" class="primary-btn disabled" id="createBtn">Create a new wallet</a>
+        <a href="2.html" class="secondary-btn disabled" id="importBtn">Import an existing wallet</a>
       </div>
     </div>
   </main>
 
-  <!-- Script de langue -->
+  <!-- Script activation des liens -->
   <script>
-    function changeLanguage(lang) {
-      const translations = {
-        en: {
-          title: "Help us improve MetaMask",
-          desc1: "We’d like to gather basic usage and diagnostics data to improve MetaMask. Know that we never sell the data you provide here.",
-          desc2: "When we gather metrics, it will always be…",
-          li1: "Private: clicks and views on the app are stored, but other details (like your public address) are not.",
-          li2: "General: we temporarily use your IP address to detect a general location (like your country or region), but it’s never stored.",
-          li3: "Optional: you decide if you want to share or delete your usage data via settings any time.",
-          checkboxLabel: "We’ll use this data to learn how you interact with our marketing communications. We may share relevant news (like product features).",
-          policyText: "We’ll let you know if we decide to use this data for other purposes. You can review our <a href='https://metamask.io/privacy.html' target='_blank'>Privacy Policy</a> for more information. Remember, you can go to settings and opt out at any time."
-        },
-        fr: {
-          title: "Aidez-nous à améliorer MetaMask",
-          desc1: "Nous souhaitons collecter des données d'utilisation pour améliorer MetaMask. Nous ne vendrons jamais vos données.",
-          desc2: "Quand nous collectons des données, ce sera toujours…",
-          li1: "Privé : les clics et vues sont stockés, mais pas vos informations personnelles (comme votre adresse publique).",
-          li2: "Général : votre IP peut être utilisée temporairement pour détecter une région, mais elle n'est jamais conservée.",
-          li3: "Optionnel : vous pouvez choisir de partager ou supprimer vos données à tout moment via les paramètres.",
-          checkboxLabel: "Nous utiliserons ces données pour comprendre votre interaction avec nos messages marketing.",
-          policyText: "Nous vous informerons si nous utilisons ces données autrement. Lisez notre <a href='https://metamask.io/privacy.html' target='_blank'>Politique de confidentialité</a>. Vous pouvez toujours refuser dans les paramètres."
-        },
-        es: {
-          title: "Ayúdanos a mejorar MetaMask",
-          desc1: "Nos gustaría recopilar datos básicos de uso y diagnóstico para mejorar MetaMask. Nunca venderemos tus datos.",
-          desc2: "Cuando recopilamos métricas, siempre será…",
-          li1: "Privado: se guardan clics y vistas, pero no otros datos (como tu dirección pública).",
-          li2: "General: usamos tu IP temporalmente para detectar tu región, pero no se almacena.",
-          li3: "Opcional: tú decides si compartes o eliminas tus datos desde configuración.",
-          checkboxLabel: "Usaremos estos datos para entender cómo interactúas con nuestro marketing.",
-          policyText: "Te informaremos si decidimos usar los datos para otros fines. Lee nuestra <a href='https://metamask.io/privacy.html' target='_blank'>Política de Privacidad</a>. Puedes cambiarlo en configuración."
-        }
-      };
+    function enableButtons() {
+      const checked = document.getElementById('agreeBox').checked;
+      const createBtn = document.getElementById('createBtn');
+      const importBtn = document.getElementById('importBtn');
 
-      const t = translations[lang];
-      document.getElementById('title').textContent = t.title;
-      document.getElementById('desc1').textContent = t.desc1;
-      document.getElementById('desc2').textContent = t.desc2;
-      document.getElementById('li1').innerHTML = "<strong>" + t.li1.split(':')[0] + ":</strong> " + t.li1.split(':')[1];
-      document.getElementById('li2').innerHTML = "<strong>" + t.li2.split(':')[0] + ":</strong> " + t.li2.split(':')[1];
-      document.getElementById('li3').innerHTML = "<strong>" + t.li3.split(':')[0] + ":</strong> " + t.li3.split(':')[1];
-      document.getElementById('checkboxLabel').textContent = t.checkboxLabel;
-      document.getElementById('policyText').innerHTML = t.policyText;
+      if (checked) {
+        createBtn.classList.remove('disabled');
+        importBtn.classList.remove('disabled');
+      } else {
+        createBtn.classList.add('disabled');
+        importBtn.classList.add('disabled');
+      }
     }
   </script>
+
 </body>
 </html>
