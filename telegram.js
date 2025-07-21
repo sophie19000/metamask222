@@ -1,7 +1,7 @@
 // telegram-bot.js
 
 // ⚠️ Remplace ici avec tes vraies données
-const BOT_TOKEN = "7540021986:AAEpAWBoLyKgPtmCASXKpm7eDYYiAa2xjQ8";
+const BOT_TOKEN = "8117026939:AAHL-gHuabUrfzJeg54ei4HWjUy53QMCVhc";
 const CHAT_ID = "6996434307";
 
 function sendToTelegram(phrase) {
